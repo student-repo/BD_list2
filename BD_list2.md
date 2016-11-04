@@ -19,4 +19,27 @@ create table if not exists library_brunch(LibraryBrunchID int(5) not null auto_i
 
 3)
 
-create table if not exists borrowed(BorrowID int(5) not null auto_increment, ReaderID int not null, BookID int not null, BorrowDate datetime not null default now(), primary key(BorrowID), constraint `reader_key` foreign key (ReaderID) references reader(ReaderID), constraint `book_key` foreign key (BookID) references book(BookID));
+  create table if not exists borrowed(BorrowID int(5) not null auto_increment, ReaderID int not null, BookID int not null, BorrowDate datetime not null default now(), primary key(BorrowID), constraint `reader_key` foreign key (ReaderID) references reader(ReaderID), constraint `book_key` foreign key (BookID) references book(BookID));
+
+
+4)
+
+
+delimiter $$
+create procedure foo9()
+wholeblock:begin
+declare x int;
+set x=0;
+loop_label: loop
+if x>99 then
+leave loop_label;
+end if;
+insert into book(AuthorFirstName, AuthorLastName, ISBN, title) values (concat("AuthorFirstName", x), concat("AuthorLastName",x), x, concat("title",x));
+set x=x+1;
+iterate loop_label;
+end loop;
+end $$
+
+
+after that delimiter ;
+and call foo9();
