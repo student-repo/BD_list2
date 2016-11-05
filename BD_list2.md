@@ -26,13 +26,19 @@ create table if not exists library_brunch(LibraryBrunchID int(5) not null auto_i
 
 
 delimiter $$
-create procedure foo9()
+create procedure foo10()
 wholeblock:begin
 declare x int;
-set x=0;
+set x=1;
 loop_label: loop
-if x>99 then
+if x>100 then
 leave loop_label;
+end if;
+if x < 51 then
+insert into reader(FirstName, LastName, BirthDate, PIN) values (concat("FirstName", x), concat("LastName", x), date("1990-01-01") + interval x*x day, x);
+end if;
+if x<6 then
+insert into library_brunch(Name, Address) values (concat("Name", x), concat("Address",x));
 end if;
 insert into book(AuthorFirstName, AuthorLastName, ISBN, title) values (concat("AuthorFirstName", x), concat("AuthorLastName",x), x, concat("title",x));
 set x=x+1;
