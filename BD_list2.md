@@ -99,6 +99,10 @@ delimiter ;
 
 create table if not exists book_in_branch(LibraryBrunchID int(5), BookID int(5), LaunchDate datetime not null, constraint `library_brunch_key` foreign key (LibraryBrunchID) references library_brunch(LibraryBrunchID) on delete cascade, constraint `book_key2` foreign key (BookID) references book(BookID) on delete cascade);
 
+
+
+create table if not exists book_in_branch(LibraryBrunchID int(5), BookID int(5), LaunchDate datetime not null);
+
 7)
 
 insert into library_brunch(Name, Address) values ("Name6", "Address6");
@@ -114,6 +118,7 @@ begin
 end $$
 delimiter ;
 
+if you want to check:  insert into book(AuthorFirstName, AuthorLastName, ISBN, title) values ("AuthorFirstName", "AuthorLastName",101, "title");
 9)
 
 delimiter $$
@@ -169,3 +174,58 @@ create procedure foo1(
     delimiter ;
 
 if you want to check: call foo2(11);
+
+
+13)
+
+create view foo5 as
+select title, Name, concat(FirstName, " ", LastName) from borrowed inner join reader on borrowed.ReaderID=reader.ReaderID inner join book on book.BookID=borrowed.BookID left outer join book_in_branch on book_in_branch.BookID=borrowed.BookID left outer join library_brunch on book_in_branch.LibraryBrunchID=library_brunch.LibraryBrunchID;
+
+or
+create view foo5 as
+select title,LibraryBrunchID , concat(FirstName, " ", LastName) from borrowed inner join reader on borrowed.ReaderID=reader.ReaderID inner join book on book.BookID=borrowed.BookID left outer join book_in_branch on book_in_branch.BookID=borrowed.BookID;
+
+
+if you want to check: select * from foo5;
+
+14)
+
+delimiter $$
+create procedure foo3(
+  in name varchar(50))
+  begin
+  select count(*) from book_in_branch inner join library_brunch on book_in_branch.LibraryBrunchID=library_brunch.LibraryBrunchID where library_brunch.Name=name;
+  end $$
+  delimiter ;
+
+
+15)
+
+delimiter $$
+create procedure foo4(
+  in libraryBrunchName varchar(50),
+  out youngestBook varchar(50),
+  out oldestBook varchar(50))
+  begin
+  select title
+  into youngestBook
+  from book_in_branch
+  inner join book on book_in_branch.BookID=book.BookID
+  inner join library_brunch on library_brunch.LibraryBrunchID=book_in_branch.LibraryBrunchID
+  where library_brunch.Name=libraryBrunchName
+  order by LaunchDate desc limit 1;
+
+  select title
+  into oldestBook
+  from book_in_branch
+  inner join book on book_in_branch.BookID=book.BookID
+  inner join library_brunch on library_brunch.LibraryBrunchID=book_in_branch.LibraryBrunchID
+  where library_brunch.Name=libraryBrunchName
+  order by LaunchDate limit 1;
+
+  end $$
+  delimiter ;
+
+  if you want to check: call foo4("Name6", @young, @old);
+  select @young;
+  select @old;
